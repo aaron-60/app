@@ -1,0 +1,24 @@
+{
+  "name": "jobconnect",
+  "version": "1.0.0",
+  "description": "A LinkedIn-style job application and professional networking mobile app",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server/index.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install:all": "npm install && cd client && npm install",
+    "seed": "node server/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "better-sqlite3": "^9.4.3",
+    "uuid": "^9.0.0"
+  }
+}
