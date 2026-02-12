@@ -23,7 +23,7 @@ export default function Notifications() {
 
   const loadNotifications = async () => {
     try {
-      const data = await apiGet('/api/notifications');
+      const data = await apiGet('/notifications');
       setNotifications(data.notifications || []);
     } catch (err) {
       console.error(err);
@@ -45,7 +45,7 @@ export default function Notifications() {
 
   const markAllAsRead = async () => {
     try {
-      await apiPut('/api/notifications/read-all');
+      await apiPut('/notifications/read-all');
       setNotifications(notifications.map(n => ({ ...n, is_read: 1 })));
     } catch (err) {
       console.error(err);

@@ -21,12 +21,12 @@ export default function Connections() {
     setLoading(true);
     try {
       const [connData, pendData, sugData] = await Promise.all([
-        apiGet('/api/connections'),
+        apiGet('/connections'),
         apiGet('/api/connections/pending'),
         apiGet('/api/connections/suggestions')
       ]);
       setConnections(connData.connections || []);
-      setPending(pendData.requests || []);
+      setPending(pendData.pending_requests || pendData.requests || []);
       setSuggestions(sugData.suggestions || []);
     } catch (err) {
       console.error(err);
@@ -115,7 +115,7 @@ export default function Connections() {
         <>
           <div style={styles.count}>{connections.length} connection{connections.length !== 1 ? 's' : ''}</div>
           {connections.map(conn => (
-            <ConnectionCard key={conn.id} connection={conn} type="connected"
+            <ConnectionCard key={conn.id} connection={conn} status="connected"
               onRemove={() => handleRemove(conn.connection_id || conn.id)} />
           ))}
         </>
@@ -131,7 +131,7 @@ export default function Connections() {
     if (activeTab === 1) {
       return pending.length > 0 ? (
         pending.map(req => (
-          <ConnectionCard key={req.id} connection={req} type="pending_received"
+          <ConnectionCard key={req.id} connection={req} status="pending_received"
             onAccept={() => handleAccept(req.connection_id || req.id)}
             onReject={() => handleReject(req.connection_id || req.id)} />
         ))
@@ -146,7 +146,7 @@ export default function Connections() {
 
     return suggestions.length > 0 ? (
       suggestions.map(user => (
-        <ConnectionCard key={user.id} connection={user} type="suggestion"
+        <ConnectionCard key={user.id} connection={user} status="suggestion"
           onConnect={() => handleConnect(user.id)} />
       ))
     ) : (

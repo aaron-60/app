@@ -188,8 +188,8 @@ const FilterIcon = () => (
   </svg>
 );
 
-const jobTypes = ['full_time', 'part_time', 'contract', 'internship', 'remote'];
-const experienceLevels = ['entry', 'mid', 'senior', 'lead', 'executive'];
+const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Remote'];
+const experienceLevels = ['Entry', 'Mid', 'Senior', 'Lead'];
 
 export default function JobSearch() {
   const navigate = useNavigate();
@@ -214,14 +214,14 @@ export default function JobSearch() {
       const params = new URLSearchParams();
       params.append('page', page);
       params.append('limit', 10);
-      if (search) params.append('search', search);
-      if (filters.job_type) params.append('job_type', filters.job_type);
+      if (search) params.append('q', search);
+      if (filters.job_type) params.append('type', filters.job_type);
       if (filters.experience_level) params.append('experience_level', filters.experience_level);
       if (filters.location) params.append('location', filters.location);
 
       const data = await apiGet(`/jobs?${params.toString()}`);
       setJobs(data.jobs || data || []);
-      setTotalPages(data.totalPages || data.total_pages || Math.ceil((data.total || 0) / 10) || 1);
+      setTotalPages(data.pagination?.pages || data.totalPages || 1);
     } catch (err) {
       console.error('Fetch jobs error:', err);
     } finally {
@@ -231,7 +231,7 @@ export default function JobSearch() {
 
   const fetchApplications = useCallback(async () => {
     try {
-      const data = await apiGet('/jobs/applications/me');
+      const data = await apiGet('/jobs/user/applications');
       setApplications(data.applications || data || []);
     } catch (err) {
       console.error('Fetch applications error:', err);
@@ -240,8 +240,8 @@ export default function JobSearch() {
 
   const fetchSavedJobs = useCallback(async () => {
     try {
-      const data = await apiGet('/jobs/saved/me');
-      setSavedJobs(data.jobs || data || []);
+      const data = await apiGet('/jobs/user/saved');
+      setSavedJobs(data.saved_jobs || data.jobs || data || []);
     } catch (err) {
       console.error('Fetch saved jobs error:', err);
     }
@@ -321,7 +321,7 @@ export default function JobSearch() {
                 style={filters.job_type === type ? activeChipStyle : chipStyle}
                 onClick={() => toggleFilter('job_type', type)}
               >
-                {type.replace('_', ' ')}
+                {type}
               </span>
             ))}
           </div>

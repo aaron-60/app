@@ -62,7 +62,7 @@ export default function PostJob() {
         salary_max: form.salary_max ? parseInt(form.salary_max) : null,
         skills_required: form.skills_required.join(',')
       };
-      const res = await apiPost('/api/jobs', payload);
+      const res = await apiPost('/jobs', payload);
       if (res.error) throw new Error(res.error);
       navigate('/jobs');
     } catch (err) {

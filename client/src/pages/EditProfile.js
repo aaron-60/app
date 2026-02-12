@@ -34,7 +34,7 @@ export default function EditProfile() {
     setError('');
     setSuccess('');
     try {
-      const data = await apiPut('/api/users/profile', {
+      const data = await apiPut('/users/profile', {
         ...form,
         experience_years: parseInt(form.experience_years) || 0
       });

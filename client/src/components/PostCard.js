@@ -122,27 +122,32 @@ const CommentIcon = () => (
 
 export default function PostCard({ post, onUpdate }) {
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(post.user_has_liked || false);
-  const [likeCount, setLikeCount] = useState(post.like_count || 0);
+  const [liked, setLiked] = useState(post.user_has_liked || post.liked || false);
+  const [likeCount, setLikeCount] = useState(post.likes_count || post.like_count || 0);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState(post.comments || []);
-  const [commentCount, setCommentCount] = useState(post.comment_count || 0);
+  const [commentCount, setCommentCount] = useState(post.comments_count || post.comment_count || 0);
 
-  const author = post.author || post.user || {};
+  const author = post.author || post.user || {
+    id: post.user_id,
+    first_name: post.first_name,
+    last_name: post.last_name,
+    headline: post.author_headline || post.headline,
+    avatar: post.author_avatar || post.avatar,
+  };
   const authorName = `${author.first_name || ''} ${author.last_name || ''}`.trim();
   const bgColor = getAvatarColor(authorName);
 
   const handleLike = async () => {
     try {
-      if (liked) {
-        await apiDelete(`/posts/${post.id}/like`);
-        setLiked(false);
-        setLikeCount((c) => Math.max(0, c - 1));
+      const data = await apiPost(`/posts/${post.id}/like`);
+      if (data.liked !== undefined) {
+        setLiked(data.liked);
+        setLikeCount(data.likes_count ?? (data.liked ? likeCount + 1 : Math.max(0, likeCount - 1)));
       } else {
-        await apiPost(`/posts/${post.id}/like`);
-        setLiked(true);
-        setLikeCount((c) => c + 1);
+        setLiked(!liked);
+        setLikeCount((c) => liked ? Math.max(0, c - 1) : c + 1);
       }
     } catch (err) {
       console.error('Like error:', err);
@@ -152,7 +157,7 @@ export default function PostCard({ post, onUpdate }) {
   const handleComment = async () => {
     if (!commentText.trim()) return;
     try {
-      const data = await apiPost(`/posts/${post.id}/comments`, { content: commentText });
+      const data = await apiPost(`/posts/${post.id}/comment`, { content: commentText });
       const newComment = data.comment || data;
       setComments((prev) => [...prev, newComment]);
       setCommentCount((c) => c + 1);

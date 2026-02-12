@@ -119,7 +119,7 @@ export default function ConnectionCard({ connection, status, onUpdate }) {
   const handleConnect = async () => {
     setLoading(true);
     try {
-      await apiPost('/connections/request', { to_user_id: user.id });
+      await apiPost(`/connections/request/${user.id}`);
       setCurrentStatus('pending_sent');
       if (onUpdate) onUpdate();
     } catch (err) {

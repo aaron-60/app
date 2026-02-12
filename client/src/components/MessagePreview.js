@@ -75,11 +75,17 @@ const unreadDotStyle = {
 export default function MessagePreview({ conversation }) {
   const navigate = useNavigate();
 
-  const user = conversation.other_user || conversation.user || {};
+  const user = conversation.other_user || conversation.user || {
+    id: conversation.partner_id || conversation.user_id,
+    first_name: conversation.partner_first_name || conversation.first_name,
+    last_name: conversation.partner_last_name || conversation.last_name,
+    headline: conversation.partner_headline || conversation.headline,
+    avatar: conversation.partner_avatar || conversation.avatar,
+  };
   const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
   const bgColor = getAvatarColor(fullName);
-  const lastMessage = conversation.last_message || conversation.lastMessage || '';
-  const lastTime = conversation.last_message_at || conversation.updated_at || conversation.lastMessageAt;
+  const lastMessage = conversation.last_message || conversation.content || conversation.lastMessage || '';
+  const lastTime = conversation.last_message_at || conversation.created_at || conversation.updated_at;
   const unread = conversation.unread || conversation.unread_count > 0;
 
   const handleClick = () => {

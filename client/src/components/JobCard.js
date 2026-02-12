@@ -120,23 +120,20 @@ export default function JobCard({ job, onSaveToggle }) {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(job.user_has_saved || job.saved || false);
 
-  const skills = Array.isArray(job.skills)
-    ? job.skills
-    : typeof job.skills === 'string'
-    ? job.skills.split(',').map((s) => s.trim()).filter(Boolean)
+  const skillsRaw = job.skills_required || job.skills || '';
+  const skills = Array.isArray(skillsRaw)
+    ? skillsRaw
+    : typeof skillsRaw === 'string'
+    ? skillsRaw.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
 
   const handleSave = async (e) => {
     e.stopPropagation();
     try {
-      if (saved) {
-        await apiDelete(`/jobs/${job.id}/save`);
-        setSaved(false);
-      } else {
-        await apiPost(`/jobs/${job.id}/save`);
-        setSaved(true);
-      }
-      if (onSaveToggle) onSaveToggle(job.id, !saved);
+      const data = await apiPost(`/jobs/${job.id}/save`);
+      const newSaved = data.saved !== undefined ? data.saved : !saved;
+      setSaved(newSaved);
+      if (onSaveToggle) onSaveToggle(job.id, newSaved);
     } catch (err) {
       console.error('Save error:', err);
     }
@@ -148,7 +145,7 @@ export default function JobCard({ job, onSaveToggle }) {
 
   const salaryMin = job.salary_min || job.salaryMin;
   const salaryMax = job.salary_max || job.salaryMax;
-  const jobType = job.job_type || job.jobType;
+  const jobType = job.type || job.job_type || job.jobType;
   const experienceLevel = job.experience_level || job.experienceLevel;
   const companyName = job.company_name || job.company || '';
 

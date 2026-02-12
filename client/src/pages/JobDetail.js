@@ -254,13 +254,8 @@ export default function JobDetail() {
 
   const handleSave = async () => {
     try {
-      if (saved) {
-        await apiDelete(`/jobs/${id}/save`);
-        setSaved(false);
-      } else {
-        await apiPost(`/jobs/${id}/save`);
-        setSaved(true);
-      }
+      const data = await apiPost(`/jobs/${id}/save`);
+      setSaved(data.saved !== undefined ? data.saved : !saved);
     } catch (err) {
       console.error('Save error:', err);
     }
@@ -330,16 +325,17 @@ export default function JobDetail() {
     );
   }
 
-  const skills = Array.isArray(job.skills)
-    ? job.skills
-    : typeof job.skills === 'string'
-    ? job.skills.split(',').map((s) => s.trim()).filter(Boolean)
+  const skillsRaw = job.skills_required || job.skills || '';
+  const skills = Array.isArray(skillsRaw)
+    ? skillsRaw
+    : typeof skillsRaw === 'string'
+    ? skillsRaw.split(',').map((s) => s.trim()).filter(Boolean)
     : [];
 
   const isOwner = user && (job.posted_by === user.id || job.user_id === user.id);
   const salaryMin = job.salary_min || job.salaryMin;
   const salaryMax = job.salary_max || job.salaryMax;
-  const jobType = job.job_type || job.jobType;
+  const jobType = job.type || job.job_type || job.jobType;
   const experienceLevel = job.experience_level || job.experienceLevel;
   const companyName = job.company_name || job.company || '';
 

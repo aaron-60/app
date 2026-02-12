@@ -15,7 +15,7 @@ export default function Messages() {
 
   const loadConversations = async () => {
     try {
-      const data = await apiGet('/api/messages/conversations');
+      const data = await apiGet('/messages/conversations');
       setConversations(data.conversations || []);
     } catch (err) {
       console.error(err);
@@ -26,7 +26,7 @@ export default function Messages() {
 
   const filtered = conversations.filter(c => {
     if (!search) return true;
-    const name = `${c.first_name} ${c.last_name}`.toLowerCase();
+    const name = `${c.partner_first_name || c.first_name || ''} ${c.partner_last_name || c.last_name || ''}`.toLowerCase();
     return name.includes(search.toLowerCase());
   });
 
@@ -68,8 +68,7 @@ export default function Messages() {
         ) : filtered.length > 0 ? (
           <div style={{ background: '#fff' }}>
             {filtered.map(conv => (
-              <MessagePreview key={conv.user_id || conv.id} conversation={conv}
-                onClick={() => navigate(`/messages/${conv.user_id || conv.id}`)} />
+              <MessagePreview key={conv.partner_id || conv.user_id || conv.id} conversation={conv} />
             ))}
           </div>
         ) : (
